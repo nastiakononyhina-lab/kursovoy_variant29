@@ -1,20 +1,18 @@
 
 #include <stdio.h>
 
-int main(void)
-{
-    printf("Архив событий кэш-сервера\n");
-
-    return 0;
-}
-
-#include <stdio.h>
-
 typedef struct {
     char timestamp[20];
     char level[10];
     char message[256];
 } Event;
+
+void print_event(const Event *event)
+{
+    printf("Время: %s\n", event->timestamp);
+    printf("Уровень: %s\n", event->level);
+    printf("Событие: %s\n", event->message);
+}
 
 int main(void)
 {
@@ -25,9 +23,8 @@ int main(void)
     };
 
     printf("Архив событий кэш-сервера\n");
-    printf("Время: %s\n", event.timestamp);
-    printf("Уровень: %s\n", event.level);
-    printf("Событие: %s\n", event.message);
+    print_event(&event);
 
     return 0;
 }
+
