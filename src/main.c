@@ -67,18 +67,28 @@ int main(void)
 
     char line[100];
     Event event;
+    int valid_count = 0;
+    int invalid_count = 0;
 
     printf("Архив событий кэш-сервера\n");
 
     while (fgets(line, sizeof(line), file) != NULL) {
-        if (read_event(line, &event)) {
-            print_event(&event);
-            printf("---\n");
-        } else {
-            printf("Пропущена некорректная строка.\n");
-        }
-    }
+        
+if (read_event(line, &event)) {
+    valid_count++;
+    print_event(&event);
+    printf("---\n");
+} else {
+    invalid_count++;
+    printf("Пропущена некорректная строка.\n");
+}
 
+    }
     fclose(file);
-    return 0;
+
+printf("Корректных событий: %d\n", valid_count);
+printf("Некорректных строк: %d\n", invalid_count);
+
+return 0;
+
 }
