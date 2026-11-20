@@ -9,9 +9,6 @@ typedef struct {
     int misses;
 } Event;
 
-void print_event(const Event *event);
-
-
 int is_event_valid(const Event *event)
 {
     if (event == NULL) {
@@ -33,24 +30,23 @@ int is_event_valid(const Event *event)
     return 1;
 }
 
-
-
-int main(void)
+int read_event(const char *line, Event *event)
 {
-    Event event = {10, 30, 1, 120, 8};
-
-    printf("Архив событий кэш-сервера\n");
-
-    if (is_event_valid(&event)) {
-        printf("Событие корректно.\n");
-        print_event(&event);
-    } else {
-        printf("Ошибка: некорректные данные события.\n");
+    if (line == NULL || event == NULL) {
+        return 0;
     }
 
-    return 0;
-}
+    if (sscanf(line, "%d:%d %d %d %d",
+               &event->hours,
+               &event->minutes,
+               &event->node,
+               &event->hits,
+               &event->misses) != 5) {
+        return 0;
+    }
 
+    return is_event_valid(event);
+}
 
 void print_event(const Event *event)
 {
@@ -58,4 +54,31 @@ void print_event(const Event *event)
     printf("Узел: %d\n", event->node);
     printf("Попадания: %d\n", event->hits);
     printf("Промахи: %d\n", event->misses);
+}
+
+int main(void)
+{
+    FILE *file = fopen("events.txt", "r");
+
+    if (file == NULL) {
+        printf("Не удалось открыть файл events.txt\n");
+        return 1;
+    }
+
+    char line[100];
+    Event event;
+
+    printf("Архив событий кэш-сервера\n");
+
+    while (fgets(line, sizeof(line), file) != NULL) {
+        if (read_event(line, &event)) {
+            print_event(&event);
+            printf("---\n");
+        } else {
+            printf("Пропущена некорректная строка.\n");
+        }
+    }
+
+    fclose(file);
+    return 0;
 }
